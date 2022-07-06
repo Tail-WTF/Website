@@ -1,0 +1,11 @@
+{
+  "extends": "next/core-web-vitals",
+  "rules": {
+    "no-multi-spaces": [
+      2,
+      {
+        "ignoreEOLComments": true
+      }
+    ]
+  }
+}
