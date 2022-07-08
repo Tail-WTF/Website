@@ -1,5 +1,9 @@
 import Head from "next/head";
 
+/**
+ * General layout of the website. Controls headers/footers shared between pages.
+ * As well as general site styling (background, font, etc).
+ */
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
