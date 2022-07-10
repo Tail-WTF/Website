@@ -10,9 +10,7 @@ export function H1({
   className?: string;
 }) {
   return (
-    <h1
-      className={`text-lg font-extrabold text-gray-300 sm:text-xl ${className}`}
-    >
+    <h1 className={`text-lg font-extrabold sm:text-xl ${className}`}>
       {children}
     </h1>
   );

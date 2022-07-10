@@ -9,6 +9,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        lime: {
+          550: "#5ED740",
+        },
         purple: {
           1000: "#281834",
         },
