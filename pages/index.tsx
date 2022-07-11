@@ -2,8 +2,22 @@ import Head from "next/head";
 import Layout from "../components/layout";
 import { H1, H2 } from "../components/headings";
 import { ActionBtn, LinkBox } from "../components/form";
+import { useRef, useState } from "react";
+import { useRouter } from "next/router";
 
 export default function IndexPage() {
+  const router = useRouter();
+  const [url, setURL] = useState("");
+
+  const submitTo = "/sanitize";
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    router.push({
+      pathname: submitTo,
+      query: { url },
+    });
+  };
+
   return (
     <>
       <Head>
@@ -19,11 +33,13 @@ export default function IndexPage() {
             </header>
 
             <div className="mt-10">
-              <form action="/sanitize" method="get">
+              <form action={submitTo} method="get" onSubmit={handleSubmit}>
                 <LinkBox
                   required
+                  value={url}
                   placeholder="-> Paste your link here <-"
                   className="peer border-gray-500 transition-colors placeholder:text-lime-550 valid:border-gray-700"
+                  onChange={(e) => setURL(e.target.value)}
                 />
                 <ActionBtn
                   type="submit"
