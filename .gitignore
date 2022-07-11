@@ -28,7 +28,7 @@ yarn-error.log*
 
 # local env/config files
 .env*.local
-sanitization_rules.yaml
+/data/
 
 # vercel
 .vercel
