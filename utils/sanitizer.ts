@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import YAML from "js-yaml";
-import normalizeUrl from "normalize-url";
+import { find as linkify } from "linkifyjs";
 
 const RULE_FILE = path.join(process.cwd(), "data", "sanitization_rules.yaml");
 
@@ -29,17 +29,25 @@ interface RuleSet {
   [key: string]: SiteRule;
 }
 
+/**
+ * Sanitizes the first link found in text.
+ *
+ * This function intentionally does not support sanitization of
+ * all links in text as it would be incompatible with current UI design.
+ */
+export async function sanitizeLinkInText(text: string): Promise<string> {
+  const links = linkify(text, "url");
+  if (links.length == 0) return text;
+
+  const sanitized = await sanitizeURL(links[0].href);
+  return (
+    text.substring(0, links[0].start) + sanitized + text.substring(links[0].end)
+  );
+}
+
 export async function sanitizeURL(originalURL: string) {
   const allRules = loadSanitizationRules();
-  let url: URL = new URL(
-    normalizeUrl(originalURL, {
-      stripWWW: false,
-      stripTextFragment: false,
-      sortQueryParameters: false,
-      stripAuthentication: false,
-      removeQueryParameters: false,
-    })
-  );
+  let url: URL = new URL(originalURL);
 
   try {
     getRuleForURL(allRules, url, "expand");

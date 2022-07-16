@@ -8,7 +8,7 @@ import { H1 } from "../components/headings";
 import { useState } from "react";
 import { GetServerSideProps } from "next";
 
-import { sanitizeURL } from "../utils/sanitizer";
+import { sanitizeLinkInText } from "../utils/sanitizer";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { url = null } = ctx.query;
@@ -18,7 +18,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     };
   }
 
-  const sanitizedURL = await sanitizeURL(url);
+  const sanitizedURL = await sanitizeLinkInText(url);
   return {
     props: {
       sanitizedURL,
