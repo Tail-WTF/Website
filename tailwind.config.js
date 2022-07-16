@@ -15,6 +15,9 @@ module.exports = {
         purple: {
           1000: "#281834",
         },
+        rose: {
+          450: "rgba(226, 73, 119, 0.96)",
+        },
       },
       fontFamily: {
         mono: ["JetBrains Mono", ...defaultTheme.fontFamily.mono],

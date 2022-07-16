@@ -1,9 +1,13 @@
 import Head from "next/head";
 import Layout from "../components/layout";
-import { H1, H2 } from "../components/headings";
-import { LinkBox } from "../components/form";
 import Footer from "../components/footer";
+
+import { LinkBox } from "../components/form";
+import { H1 } from "../components/headings";
+
+import { useState } from "react";
 import { GetServerSideProps } from "next";
+
 import { sanitizeURL } from "../utils/sanitizer";
 
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
@@ -23,6 +27,18 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
 };
 
 export default function ResultPage({ sanitizedURL }: { sanitizedURL: string }) {
+  const [copyState, setCopyState] = useState<boolean | null>(null);
+
+  const handleInputClick = (e: React.MouseEvent<HTMLInputElement>) => {
+    (e.target as HTMLInputElement).select();
+    try {
+      navigator.clipboard.writeText(sanitizedURL);
+      setCopyState(true);
+    } catch (error) {
+      setCopyState(false);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -41,15 +57,19 @@ export default function ResultPage({ sanitizedURL }: { sanitizedURL: string }) {
             <div className="relative mt-3.5">
               <LinkBox
                 readOnly
-                autoFocus
                 value={sanitizedURL}
                 className="border-lime-200 text-lime-200"
-                onFocus={(e) => {
-                  e.target.setSelectionRange(0, e.target.value.length);
-                  navigator.clipboard.writeText(sanitizedURL);
-                }}
+                onClick={handleInputClick}
               />
             </div>
+            {copyState !== null &&
+              (copyState ? (
+                <p className="mt-4 text-lime-550">Copied!</p>
+              ) : (
+                <p className="mt-4 text-rose-450">
+                  Unable to copy link. Please try manually.
+                </p>
+              ))}
           </div>
           <div className="invisible grow"></div>
           <Footer />
