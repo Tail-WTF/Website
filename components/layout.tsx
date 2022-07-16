@@ -12,8 +12,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <meta name="referrer" content="same-origin"></meta>
         {/* @TODO: open graph tags */}
       </Head>
-      <div className="bg-purple-1000 font-mono text-gray-300">
-        <main className="mx-auto max-w-3xl">{children}</main>
+      <div className="bg-purple-1000 font-mono text-gray-300 ">
+        <main className="mx-auto max-w-screen-md px-8 md:px-0">{children}</main>
       </div>
     </>
   );

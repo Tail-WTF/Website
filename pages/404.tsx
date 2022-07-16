@@ -18,7 +18,7 @@ export default function NotFound() {
               We cannot find the page you are looking for :-{"("}
             </H2>
             <Link href="/">
-              <a className="mt-10 block text-lg text-cyan-600 sm:text-xl">
+              <a className="mt-10 block text-lg text-cyan-600 md:text-xl">
                 {"<-"} Back to home page
               </a>
             </Link>

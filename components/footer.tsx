@@ -3,28 +3,43 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="flex w-full py-4 text-gray-500">
-      <nav className="flex gap-12">
-        <a
-          href="https://github.com/Tail-WTF/Website"
-          target="_blank"
-          rel="noreferrer"
-        >
-          GitHub
-        </a>
-        <Link href={"/#about"}>
-          <a>About</a>
-        </Link>
-        <Link href={"/#privacy"}>
-          <a>Privacy</a>
-        </Link>
+      <nav>
+        <ul className="flex gap-12">
+          <li>
+            <a
+              href="https://github.com/Tail-WTF/Website"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span>GitHub</span>
+            </a>
+          </li>
+          <DesktopNavItem href={"/#about"}>About</DesktopNavItem>
+          <DesktopNavItem href={"/#privacy"}>Privacy</DesktopNavItem>
+        </ul>
       </nav>
       <div className="flex-grow"></div>
-      <div className="">
-        {new Date().getFullYear() + " "}
+      <div>
         <Link href={"/"}>
           <a>Tail.WTF</a>
         </Link>
       </div>
     </footer>
+  );
+}
+
+function DesktopNavItem({
+  href,
+  children,
+}: {
+  href: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <li className="hidden md:inline">
+      <Link href={href}>
+        <a>{children}</a>
+      </Link>
+    </li>
   );
 }
