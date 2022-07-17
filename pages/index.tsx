@@ -18,6 +18,12 @@ export default function IndexPage() {
     });
   };
 
+  const handleInputClick = async () => {
+    try {
+      setURL(await navigator.clipboard.readText());
+    } catch {}
+  };
+
   return (
     <>
       <Head>
@@ -40,6 +46,7 @@ export default function IndexPage() {
                   placeholder="-> Paste your link here <-"
                   className="peer border-gray-500 transition-colors placeholder:text-lime-550 valid:border-gray-700"
                   onChange={(e) => setURL(e.target.value)}
+                  onClick={handleInputClick}
                 />
                 <ActionBtn
                   type="submit"
