@@ -2,7 +2,7 @@ import Head from "next/head";
 import Layout from "../components/layout";
 import { H1, H2 } from "../components/headings";
 import { ActionBtn, LinkBox } from "../components/form";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/router";
 
 export default function IndexPage() {
@@ -47,6 +47,8 @@ export default function IndexPage() {
                   className="peer border-gray-500 transition-colors placeholder:text-lime-550 valid:border-gray-700"
                   onChange={(e) => setURL(e.target.value)}
                   onClick={handleInputClick}
+                  autoFocus={true}
+                  enterKeyHint="go"
                 />
                 <ActionBtn
                   type="submit"
