@@ -35,14 +35,26 @@ interface RuleSet {
  * This function intentionally does not support sanitization of
  * all links in text as it would be incompatible with current UI design.
  */
-export async function sanitizeLinkInText(text: string): Promise<string> {
+export async function sanitizeLinkInText(text: string): Promise<{
+  text: string;
+  links: [string] | [];
+}> {
   const links = linkify(text, "url");
-  if (links.length == 0) return text;
+  if (links.length == 0) return { text, links: [] };
 
-  const sanitized = await sanitizeURL(links[0].href);
-  return (
-    text.substring(0, links[0].start) + sanitized + text.substring(links[0].end)
-  );
+  try {
+    const sanitized = await sanitizeURL(links[0].href);
+    const sanitizedText =
+      text.substring(0, links[0].start) +
+      sanitized +
+      text.substring(links[0].end);
+    return {
+      text: text,
+      links: [sanitized],
+    };
+  } catch (e) {
+    return { text, links: [] };
+  }
 }
 
 export async function sanitizeURL(originalURL: string) {
@@ -54,14 +66,8 @@ export async function sanitizeURL(originalURL: string) {
     url = await expandShortURL(url);
   } catch {}
 
-  let rule: SanitizeRule, matches;
-  try {
-    [rule, matches] = getRuleForURL(allRules, url, "sanitize");
-  } catch (e) {
-    return originalURL;
-  }
-
   // Sanitize path
+  let [rule, matches] = getRuleForURL(allRules, url, "sanitize");
   if (rule?.sanitizePath) {
     url.pathname = matches[0];
   }
