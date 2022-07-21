@@ -59,7 +59,7 @@ export default function ResultPage({ sanitizedURL }: { sanitizedURL: string }) {
                 readOnly
                 value={sanitizedURL}
                 className="border-lime-200 pr-14 text-lime-200"
-                onClick={handleInputClick}
+                onClick={copyState === null ? handleInputClick : undefined} // Only trigger on first click
               />
               <a
                 href="#"
