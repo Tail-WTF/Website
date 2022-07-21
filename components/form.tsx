@@ -12,7 +12,7 @@ export function LinkBox(props: InputHTMLAttributes<HTMLInputElement>) {
       autoComplete="off"
       autoCapitalize="off"
       {...props} // Pass through other props...
-      className={`w-full overflow-hidden text-ellipsis rounded-none border-2 bg-transparent px-4 py-3 text-lg italic focus:overflow-x-auto focus:outline-none md:text-xl ${props.className}`}
+      className={`w-full text-ellipsis rounded-none border-2 bg-transparent p-4 text-lg italic focus:outline-none md:text-xl ${props.className}`}
     />
   );
 }
