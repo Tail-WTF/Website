@@ -49,7 +49,7 @@ export async function sanitizeLinkInText(text: string): Promise<{
       sanitized +
       text.substring(links[0].end);
     return {
-      text: text,
+      text: sanitizedText,
       links: [sanitized],
     };
   } catch (e) {

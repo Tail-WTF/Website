@@ -1,6 +1,5 @@
 import Head from "next/head";
 import Layout from "../components/layout";
-import Footer from "../components/footer";
 
 import { LinkBox } from "../components/form";
 import { H1 } from "../components/headings";
@@ -27,7 +26,7 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
   };
 };
 
-export default function ResultPage({
+export default function ResultWrapper({
   text,
   sanitizedURL,
 }: {
@@ -35,24 +34,13 @@ export default function ResultPage({
   sanitizedURL: string | undefined;
 }) {
   return (
-    <>
-      <Head>
-        <title>Link Sanitization Result · Tail.WTF</title>
-        <meta name="description" content="Remove trackers from shared links" />
-      </Head>
-      <Layout>
-        <div className="flex h-screen flex-col">
-          <div className="mt-[calc(10vh+4rem)] flex flex-grow flex-col">
-            {sanitizedURL ? (
-              <ResultSuccess text={text} sanitizedURL={sanitizedURL} />
-            ) : (
-              <ResultFailure />
-            )}
-          </div>
-          <Footer />
-        </div>
-      </Layout>
-    </>
+    <Layout>
+      {sanitizedURL ? (
+        <ResultSuccess text={text} sanitizedURL={sanitizedURL} />
+      ) : (
+        <ResultFailure />
+      )}
+    </Layout>
   );
 }
 
@@ -77,6 +65,9 @@ function ResultSuccess({
 
   return (
     <>
+      <Head>
+        <title>Result · Tail.WTF</title>
+      </Head>
       <header>
         <H1 className="!font-normal italic">
           🎉 Your link is now sanitized! Click to copy it.
@@ -122,6 +113,9 @@ function ResultSuccess({
 function ResultFailure(): React.ReactElement {
   return (
     <>
+      <Head>
+        <title>Rule Missing · Tail.WTF</title>
+      </Head>
       <header>
         <H1 className="!font-normal">😢 Your link is not sanitized.</H1>
       </header>
