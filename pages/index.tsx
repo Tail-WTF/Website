@@ -33,7 +33,7 @@ export default function IndexPage() {
         <div className="flex h-screen flex-col">
           <header className="mt-[calc(10vh+4rem)]">
             <H1>Link Sanitizer</H1>
-            <H2>Remove trackers from shared link.</H2>
+            <H2>Chops trackers from shared link</H2>
           </header>
 
           <div className="mt-10">
@@ -42,7 +42,7 @@ export default function IndexPage() {
                 required
                 value={url}
                 placeholder="-> Paste your link here <-"
-                className="peer border-gray-500 transition-colors placeholder:text-lime-550 valid:border-gray-700"
+                className="peer border-gray-500 transition-colors placeholder:text-lime-550 valid:!border-gray-700 focus:border-gray-300"
                 onChange={(e) => setURL(e.target.value)}
                 onClick={url == "" ? handleInputClick : undefined} // Only trigger when input is empty
                 autoFocus={true}
@@ -50,7 +50,7 @@ export default function IndexPage() {
               />
               <ActionBtn
                 type="submit"
-                className="ml-auto mt-8 transition-colors peer-valid:border-lime-550 peer-valid:fill-lime-200 peer-valid:text-lime-200"
+                className="ml-auto mt-8 transition-colors hover:border-gray-300 hover:fill-gray-300 hover:text-gray-300 peer-valid:border-lime-550 peer-valid:fill-lime-200 peer-valid:text-lime-200 peer-valid:hover:border-lime-200"
               >
                 <svg
                   role="img"
@@ -69,6 +69,52 @@ export default function IndexPage() {
           <div className="mb-7 animate-bounce text-base">↓ Why? ↓</div>
         </div>
         {/* First screen ends here */}
+        <div className="mt-20">
+          <H1 id="about" className="!font-bold">
+            Why sanitize links?
+          </H1>
+          <div className="mt-7">
+            <p className="break-all text-gray-500"> https://example.com/foo</p>
+            <div className="flex w-full flex-row gap-10 overflow-auto whitespace-nowrap pr-5">
+              <p className="text-gray-500">
+                ?<span className="text-rose-450">share_source=copy_web</span>
+                <br />
+                &amp;
+                <span className="text-rose-450">track=12345abcdef67890</span>
+              </p>
+              <p className="mt-auto text-lime-550">
+                &quot;link generated on webpage&quot;
+                <br />
+                &quot;and shared by <i>user</i> at <i>date</i>... &quot;
+              </p>
+            </div>
+          </div>
+          <p className="hyphens-auto mt-7 text-justify md:w-4/6">
+            Because online services want to monitor your digital life! When you
+            tap share buttons, innocent-looking random strings are placed in the
+            links you get - they are actually{" "}
+            <span className="text-rose-450">&quot;trackers&quot;</span> tied to
+            your account. Every time your friends open these links, service
+            providers learn more about your social connections such as how often
+            you talk to a particular friend, topics you discuss, etc. They can
+            further exploit this information in conjunction with other data they
+            have about you and your friends.
+            <br />
+            <br />
+            Tail.WTF protects your privacy by chopping the annoying{" "}
+            <span className="text-rose-450">&quot;tails&quot;</span> off these
+            links, and also makes them look succinct and nicer.
+          </p>
+          <H1 id="privacy" className="mt-24 !font-bold">
+            Privacy
+          </H1>
+          <p className="hyphens-auto mt-7 text-justify md:w-4/6">
+            As a service that aims to protect your privacy, we do not collect
+            any information from you without your explicitly consent. When we
+            fail to sanitize specific link(s), we may ask if you would like to
+            share info about them to improve this service.
+          </p>
+        </div>
       </Layout>
     </>
   );

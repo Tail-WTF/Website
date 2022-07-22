@@ -3,7 +3,7 @@ import Document, { Html, Head, Main, NextScript } from "next/document";
 class MyDocument extends Document {
   render() {
     return (
-      <Html className="bg-purple-1000 font-mono text-gray-300">
+      <Html className="bg-purple-1000 font-mono text-gray-300" lang="en">
         <Head>
           {/* eslint-disable-next-line @next/next/google-font-display */}
           <link
