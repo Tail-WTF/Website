@@ -1,3 +1,5 @@
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FTail-WTF%2FWebsite.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2FTail-WTF%2FWebsite?ref=badge_shield)
+
 <p align="center">
     <img src="https://user-images.githubusercontent.com/59678453/180375518-92d24d0c-12d5-4255-8746-380a7aca2b20.png#gh-light-mode-only"
         alt="Logo" width=70>
@@ -12,3 +14,7 @@
         Find more details on <a href="https://github.com/Tail-WTF">project homepage</a>.
     </p>
 </p>
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2FTail-WTF%2FWebsite.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2FTail-WTF%2FWebsite?ref=badge_large)
