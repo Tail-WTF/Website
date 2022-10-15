@@ -17,7 +17,7 @@ export default function Layout({
       <Head>
         <link rel="icon" href="/favicon.ico" />
         <meta name="referrer" content="same-origin"></meta>
-        <meta name="description" content="Chops trackers from shared link" />
+        <meta name="description" content="Chop trackers from shared link" />
         {/* @TODO: open graph tags */}
       </Head>
       <main className="mx-auto max-w-screen-md px-8 md:px-0">
