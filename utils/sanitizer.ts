@@ -1,4 +1,5 @@
 import fs from "fs";
+import got from "got";
 import path from "path";
 import YAML from "js-yaml";
 import { find as linkify } from "linkifyjs";
@@ -63,7 +64,18 @@ export async function sanitizeURL(originalURL: string) {
 
   try {
     getRuleForURL(allRules, url, "expand");
-    url = await expandShortURL(url);
+    let expandedURLs = await expandShortURL(url);
+
+    // iterate reversely to get the last matched expanded URL
+    for (let i = expandedURLs.length - 1; i >= 0; i--) {
+      try {
+        getRuleForURL(allRules, expandedURLs[i], "sanitize");
+        url = expandedURLs[i];
+        break;
+      } catch (e) {
+        continue;
+      }
+    }
   } catch {}
 
   // Sanitize path
@@ -106,10 +118,12 @@ function getRuleForURL(ALL_RULES: any, url: URL, type: string) {
   throw new Error(`No rules found for path ${url.pathname}`);
 }
 
-async function expandShortURL(shortURL: URL): Promise<URL> {
-  const response = await fetch(shortURL, {
+async function expandShortURL(shortURL: URL): Promise<URL[]> {
+  const response = await got(shortURL, {
     method: "HEAD",
-    redirect: "follow",
+    maxRedirects: 5,
+    followRedirect: true,
   });
-  return new URL(response.url);
+
+  return response.redirectUrls;
 }

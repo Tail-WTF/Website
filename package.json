@@ -10,6 +10,7 @@
     "lint": "next lint && prettier --check ."
   },
   "dependencies": {
+    "got": "^12.3.0",
     "js-yaml": "4.1.0",
     "linkifyjs": "3.0.5",
     "next": "12.2.3",

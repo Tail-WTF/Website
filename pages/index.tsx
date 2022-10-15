@@ -33,7 +33,7 @@ export default function IndexPage() {
         <div className="flex h-screen flex-col">
           <header className="mt-[calc(10vh+4rem)]">
             <H1>Link Sanitizer</H1>
-            <H2>Chops trackers from shared link</H2>
+            <H2>Chop trackers from shared link</H2>
           </header>
 
           <div className="mt-10">
