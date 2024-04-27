@@ -2,6 +2,7 @@ import fs from "fs";
 import got from "got";
 import path from "path";
 import YAML from "js-yaml";
+import { URL } from "url";
 import { find as linkify } from "linkifyjs";
 
 const RULE_FILE = path.join(process.cwd(), "data", "sanitization_rules.yaml");
@@ -36,26 +37,45 @@ interface RuleSet {
  * This function intentionally does not support sanitization of
  * all links in text as it would be incompatible with current UI design.
  */
-export async function sanitizeLinkInText(text: string): Promise<{
+export async function sanitizeLinkInText(
+  text: string,
+  maxLinks: number = 1
+): Promise<{
   text: string;
-  links: [string] | [];
+  links: string[];
 }> {
   const links = linkify(text, "url");
   if (links.length == 0) return { text, links: [] };
 
-  try {
-    const sanitized = await sanitizeURL(links[0].href);
-    const sanitizedText =
-      text.substring(0, links[0].start) +
-      sanitized +
-      text.substring(links[0].end);
-    return {
-      text: sanitizedText,
-      links: [sanitized],
-    };
-  } catch (e) {
-    return { text, links: [] };
+  const sanitizedLinks: string[] = [];
+  let sanitizedText = text;
+  let offset = 0; // Offset to manage the changes in string length
+
+  const linksToProcess = links.slice(0, maxLinks);
+  for (const link of linksToProcess) {
+    try {
+      const sanitized = await sanitizeURL(link.href);
+      sanitizedLinks.push(sanitized);
+
+      const start = link.start + offset;
+      const end = link.end + offset;
+      sanitizedText =
+        sanitizedText.substring(0, start) +
+        sanitized +
+        sanitizedText.substring(end);
+
+      offset += sanitized.length - (end - start);
+    } catch (e) {
+      if (process.env.NODE_ENV === "development") {
+        console.error("Failed to sanitize URL:", e);
+      }
+    }
   }
+
+  return {
+    text: sanitizedText,
+    links: sanitizedLinks,
+  };
 }
 
 export async function sanitizeURL(originalURL: string) {
