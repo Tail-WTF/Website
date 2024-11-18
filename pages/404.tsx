@@ -14,10 +14,8 @@ export default function NotFound() {
         <H2 className="mt-2">
           We cannot find the page you are looking for :-{"("}
         </H2>
-        <Link href="/">
-          <a className="mt-10 block text-lg text-cyan-600 md:text-xl">
-            {"<-"} Back to home page
-          </a>
+        <Link href="/" className="mt-10 block text-lg text-cyan-600 md:text-xl">
+          {"<-"} Back to home page
         </Link>
       </Layout>
     </>

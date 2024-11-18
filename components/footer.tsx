@@ -20,9 +20,7 @@ export default function Footer() {
       </nav>
       <div className="flex-grow"></div>
       <div>
-        <Link href={"/"}>
-          <a>Tail.WTF</a>
-        </Link>
+        <Link href={"/"}>Tail.WTF</Link>
       </div>
     </footer>
   );
@@ -37,9 +35,7 @@ function DesktopNavItem({
 }) {
   return (
     <li className="hidden md:inline">
-      <Link href={href}>
-        <a>{children}</a>
-      </Link>
+      <Link href={href}>{children}</Link>
     </li>
   );
 }
