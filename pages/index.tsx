@@ -89,7 +89,7 @@ export default function IndexPage() {
               </p>
             </div>
           </div>
-          <p className="hyphens-auto mt-7 text-justify md:w-4/6">
+          <p className="mt-7 hyphens-auto text-justify md:w-4/6">
             Because online services want to monitor your digital life! When you
             tap share buttons, innocent-looking random strings are placed in the
             links you get - they are actually{" "}
@@ -108,7 +108,7 @@ export default function IndexPage() {
           <H1 id="privacy" className="mt-24 !font-bold">
             Privacy
           </H1>
-          <p className="hyphens-auto mt-7 text-justify md:w-4/6">
+          <p className="mt-7 hyphens-auto text-justify md:w-4/6">
             As a service that aims to protect your privacy, we do not collect
             any information from you without your explicitly consent. When we
             fail to sanitize specific link(s), we may ask if you would like to

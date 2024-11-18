@@ -24,7 +24,7 @@ export function ActionBtn(props: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button
       {...props}
-      className={`flex items-center border-2 border-gray-700 fill-gray-700 py-3 px-8 text-lg font-bold italic text-gray-700 focus:border-gray-300 focus:outline-none md:text-xl ${props.className}`}
+      className={`flex items-center border-2 border-gray-700 fill-gray-700 px-8 py-3 text-lg font-bold italic text-gray-700 focus:border-gray-300 focus:outline-none md:text-xl ${props.className}`}
     />
   );
 }
