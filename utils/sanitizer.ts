@@ -96,7 +96,11 @@ export async function sanitizeURL(originalURL: string) {
         continue;
       }
     }
-  } catch {}
+  } catch (e) {
+    if (process.env.NODE_ENV === "development") {
+      console.error("Exception during URL expansion:", e);
+    }
+  }
 
   // Sanitize path
   let [rule, matches] = getRuleForURL(allRules, url, "sanitize");
@@ -129,6 +133,11 @@ function getRuleForURL(ALL_RULES: any, url: URL, type: string) {
   }
 
   const rules = ALL_RULES[url.host];
+
+  if (!rules.hasOwnProperty(type)) {
+    throw new Error(`No rules found for type ${type}`);
+  }
+
   for (const rule of rules[type]) {
     // Check if rule pattern matches the URL.pathname, extract the matched parts
     const matches = new RegExp(rule.pattern).exec(url.pathname);
@@ -140,7 +149,7 @@ function getRuleForURL(ALL_RULES: any, url: URL, type: string) {
 
 async function expandShortURL(shortURL: URL): Promise<URL[]> {
   const response = await got(shortURL, {
-    method: "HEAD",
+    method: "GET",
     maxRedirects: 5,
     followRedirect: true,
   });
