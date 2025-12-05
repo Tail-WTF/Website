@@ -1,9 +1,14 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
 
-@layer utilities {
-  .hyphens-auto {
-    hyphens: auto;
-  }
+@theme {
+  --color-lime-550: #5ed740;
+  --color-purple-1000: #281834;
+  --color-rose-450: rgba(226, 73, 119, 0.96);
+  --font-family-mono:
+    "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+@utility hyphens-auto {
+  hyphens: auto;
 }

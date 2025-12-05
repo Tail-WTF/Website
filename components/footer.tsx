@@ -18,7 +18,7 @@ export default function Footer() {
           <DesktopNavItem href={"/#privacy"}>Privacy</DesktopNavItem>
         </ul>
       </nav>
-      <div className="flex-grow"></div>
+      <div className="grow"></div>
       <div>
         <Link href={"/"}>Tail.WTF</Link>
       </div>

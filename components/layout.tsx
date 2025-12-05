@@ -22,12 +22,10 @@ export default function Layout({
       </Head>
       <main className="mx-auto max-w-screen-md px-8 md:px-0">
         <div
-          className={`flex min-h-screen flex-col${
-            paddingTop ? "pt-[calc(10vh+4rem)]" : ""
-          }`}
+          className={`flex min-h-screen flex-col ${paddingTop ? "pt-[calc(10vh+4rem)]" : ""}`}
         >
           {children}
-          <div className="invisible flex-grow"></div>
+          <div className="invisible grow"></div>
           <Footer />
         </div>
       </main>

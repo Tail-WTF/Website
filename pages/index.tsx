@@ -65,7 +65,7 @@ export default function IndexPage() {
               </ActionBtn>
             </form>
           </div>
-          <div className="invisible flex-grow"></div>
+          <div className="invisible grow"></div>
           <div className="mb-7 animate-bounce text-base">↓ Why? ↓</div>
         </div>
         {/* First screen ends here */}
