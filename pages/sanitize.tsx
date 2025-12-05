@@ -100,9 +100,9 @@ function ResultSuccess({
       </div>
       {copyState !== null &&
         (copyState ? (
-          <p className="mt-4 text-lime-550">Copied!</p>
+          <p className="text-lime-550 mt-4">Copied!</p>
         ) : (
-          <p className="mt-4 text-rose-450">
+          <p className="text-rose-450 mt-4">
             Unable to copy link. Please try manually.
           </p>
         ))}
@@ -119,7 +119,7 @@ function ResultFailure(): React.ReactElement {
       <header>
         <H1 className="!font-normal">😢 Your link is not sanitized.</H1>
       </header>
-      <p className="mt-4 text-rose-450">
+      <p className="text-rose-450 mt-4">
         We were unable to sanitize your link. <br />
         Please submit a rule request on GitHub to help us improve.
       </p>

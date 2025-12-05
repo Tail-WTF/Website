@@ -23,7 +23,7 @@ export default function Layout({
       <main className="mx-auto max-w-screen-md px-8 md:px-0">
         <div
           className={`flex min-h-screen flex-col${
-            paddingTop ? " pt-[calc(10vh+4rem)]" : ""
+            paddingTop ? "pt-[calc(10vh+4rem)]" : ""
           }`}
         >
           {children}

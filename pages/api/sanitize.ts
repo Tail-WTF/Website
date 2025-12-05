@@ -12,7 +12,7 @@ type ResponseData =
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
+  res: NextApiResponse<ResponseData>,
 ) {
   const { text = null } = req.query;
   if (!text || Array.isArray(text)) {
