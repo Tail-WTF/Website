@@ -39,7 +39,7 @@ interface RuleSet {
  */
 export async function sanitizeLinkInText(
   text: string,
-  maxLinks: number = 1
+  maxLinks: number = 1,
 ): Promise<{
   text: string;
   links: string[];

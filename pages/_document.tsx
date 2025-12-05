@@ -5,7 +5,6 @@ class MyDocument extends Document {
     return (
       <Html className="bg-purple-1000 font-mono text-gray-300" lang="en">
         <Head>
-          {/* eslint-disable-next-line @next/next/google-font-display */}
           <link
             href="https://fonts.googleapis.com/css2?display=swap&family=JetBrains+Mono:ital,wght@0,400;0,700;0,800;1,400;1,700"
             rel="stylesheet"

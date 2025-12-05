@@ -14,3 +14,21 @@ updates:
         applies-to: version-updates
         patterns:
           - "*"
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      all-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
+  - package-ecosystem: "docker"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      all-updates:
+        applies-to: version-updates
+        patterns:
+          - "*"
