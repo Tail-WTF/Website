@@ -1,46 +1,50 @@
-name: Verify Source
-on: [pull_request, push]
+name: Verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
-    name: Build Website
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Use Node.js 24.x
+
+      - name: Setup Node.js 24
         uses: actions/setup-node@v6
         with:
-          node-version: 24.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: 24
+          cache: npm
+
       - name: Install dependencies
         run: npm ci
+
       - name: Build
         run: npm run build
+
   lint:
     name: Lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v6
-      - name: Use Node.js 24.x
+
+      - name: Setup Node.js 24
         uses: actions/setup-node@v6
         with:
-          node-version: 24.x
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
+          node-version: 24
+          cache: npm
+
       - name: Install dependencies
         run: npm ci
-      - name: Run linter
+
+      - name: Lint
         run: npm run lint

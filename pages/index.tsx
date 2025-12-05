@@ -42,7 +42,7 @@ export default function IndexPage() {
                 required
                 value={url}
                 placeholder="-> Paste your link here <-"
-                className="peer placeholder:text-lime-550 border-gray-500 transition-colors valid:!border-gray-700 focus:border-gray-300"
+                className="peer placeholder:text-lime-550 border-gray-500 transition-colors valid:border-gray-700! focus:border-gray-300"
                 onChange={(e) => setURL(e.target.value)}
                 onClick={url == "" ? handleInputClick : undefined} // Only trigger when input is empty
                 autoFocus={true}
@@ -70,7 +70,7 @@ export default function IndexPage() {
         </div>
         {/* First screen ends here */}
         <div className="mt-20">
-          <H1 id="about" className="!font-bold">
+          <H1 id="about" className="font-bold!">
             Why sanitize links?
           </H1>
           <div className="mt-7">
@@ -105,7 +105,7 @@ export default function IndexPage() {
             <span className="text-rose-450">&quot;tails&quot;</span> off these
             links, and also makes them look succinct and nicer.
           </p>
-          <H1 id="privacy" className="mt-24 !font-bold">
+          <H1 id="privacy" className="mt-24 font-bold!">
             Privacy
           </H1>
           <p className="mt-7 text-justify hyphens-auto md:w-4/6">

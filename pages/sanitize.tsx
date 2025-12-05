@@ -69,7 +69,7 @@ function ResultSuccess({
         <title>Result · Tail.WTF</title>
       </Head>
       <header>
-        <H1 className="!font-normal italic">
+        <H1 className="font-normal! italic">
           🎉 Your link is now sanitized! Click to copy it.
         </H1>
       </header>
@@ -117,7 +117,7 @@ function ResultFailure(): React.ReactElement {
         <title>Rule Missing · Tail.WTF</title>
       </Head>
       <header>
-        <H1 className="!font-normal">😢 Your link is not sanitized.</H1>
+        <H1 className="font-normal!">😢 Your link is not sanitized.</H1>
       </header>
       <p className="text-rose-450 mt-4">
         We were unable to sanitize your link. <br />
