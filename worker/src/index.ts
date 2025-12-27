@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import puppeteer from "@cloudflare/puppeteer";
 import { sanitizeLinkInText } from "./sanitizer";
 import type { Env, RuleSet } from "./types";
 
@@ -34,12 +35,55 @@ interface TelegramUpdate {
     text?: string;
     message_id: number;
   };
+  inline_query?: {
+    id: string;
+    query: string;
+  };
 }
 
 app.post("/api/bot/telegram", async (c) => {
   const update = await c.req.json<TelegramUpdate>();
-  const text = update.message?.text;
 
+  if (update.inline_query) {
+    const query = update.inline_query.query;
+    if (!query) {
+      return c.json({
+        method: "answerInlineQuery",
+        inline_query_id: update.inline_query.id,
+        results: [],
+      });
+    }
+
+    const rules = await loadRules(c.env);
+    const sanitized = await sanitizeLinkInText(query, rules, 1);
+
+    if (sanitized.links.length === 0) {
+      return c.json({
+        method: "answerInlineQuery",
+        inline_query_id: update.inline_query.id,
+        results: [],
+      });
+    }
+
+    return c.json({
+      method: "answerInlineQuery",
+      inline_query_id: update.inline_query.id,
+      results: [
+        {
+          type: "article",
+          id: "1",
+          title: "Sanitized Link",
+          description: sanitized.links[0],
+          input_message_content: {
+            message_text: sanitized.text,
+          },
+        },
+      ],
+      cache_time: 300,
+    });
+  }
+
+  const text = update.message?.text;
   if (!text) {
     return c.json({ ok: true });
   }
@@ -200,55 +244,54 @@ Call the sanitize_url function with your analysis.`;
 });
 
 async function renderPage(
-  browser: Fetcher,
+  browserBinding: Fetcher,
   url: string,
 ): Promise<{
-  title: string;
-  ogData: Record<string, string>;
-  bodyLength: number;
+  screenshot: Uint8Array;
 }> {
-  const res = await browser.fetch(
-    `https://browser-render.example.com/?url=${encodeURIComponent(url)}`,
-    {
-      headers: { "Content-Type": "application/json" },
-    },
-  );
+  const browser = await puppeteer.launch(browserBinding);
+  try {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 720 });
+    await page.goto(url, { waitUntil: "networkidle0", timeout: 15000 });
 
-  if (!res.ok) {
-    throw new Error(`Browser render failed: ${res.status}`);
+    const screenshot = (await page.screenshot({
+      type: "png",
+      fullPage: false,
+    })) as Uint8Array;
+
+    return { screenshot };
+  } finally {
+    await browser.close();
   }
-
-  const html = await res.text();
-
-  const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
-  const title = titleMatch?.[1] || "";
-
-  const ogData: Record<string, string> = {};
-  const ogMatches = html.matchAll(
-    /<meta\s+property="og:([^"]+)"\s+content="([^"]*)"/gi,
-  );
-  for (const match of ogMatches) {
-    ogData[match[1]] = match[2];
-  }
-
-  return { title, ogData, bodyLength: html.length };
 }
 
 function arePagesSimlar(
-  a: { title: string; ogData: Record<string, string>; bodyLength: number },
-  b: { title: string; ogData: Record<string, string>; bodyLength: number },
+  a: { screenshot: Uint8Array },
+  b: { screenshot: Uint8Array },
+  threshold = 0.95,
 ): boolean {
-  if (a.title !== b.title) return false;
+  // Compare screenshot bytes - if sizes differ significantly, pages are different
+  if (
+    Math.abs(a.screenshot.length - b.screenshot.length) /
+      Math.max(a.screenshot.length, b.screenshot.length) >
+    0.1
+  ) {
+    return false;
+  }
 
-  if (a.ogData["title"] !== b.ogData["title"]) return false;
-  if (a.ogData["description"] !== b.ogData["description"]) return false;
-  if (a.ogData["image"] !== b.ogData["image"]) return false;
+  // Compare byte-by-byte similarity
+  const minLength = Math.min(a.screenshot.length, b.screenshot.length);
+  let matchingBytes = 0;
 
-  const lengthRatio =
-    Math.min(a.bodyLength, b.bodyLength) / Math.max(a.bodyLength, b.bodyLength);
-  if (lengthRatio < 0.8) return false;
+  for (let i = 0; i < minLength; i++) {
+    if (a.screenshot[i] === b.screenshot[i]) {
+      matchingBytes++;
+    }
+  }
 
-  return true;
+  const similarity = matchingBytes / Math.max(a.screenshot.length, b.screenshot.length);
+  return similarity >= threshold;
 }
 
 app.post("/api/browser-sanitize", async (c) => {

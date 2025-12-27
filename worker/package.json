@@ -14,6 +14,7 @@
     "linkifyjs": "^4.3.2"
   },
   "devDependencies": {
+    "@cloudflare/puppeteer": "^1.0.4",
     "@cloudflare/workers-types": "^4.20250520.0",
     "@types/js-yaml": "^4.0.5",
     "vitest": "^3.2.4",

@@ -268,7 +268,10 @@ function ResultFailure({
                 {JSON.stringify(result.suggestedRule, null, 2)}
               </pre>
               <a
-                href={buildGitHubIssueUrl(originalUrl, result)}
+                href={buildGitHubIssueUrl(
+                  new URL(originalUrl).hostname,
+                  result,
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 inline-block border-2 border-gray-500 px-4 py-2 text-sm text-gray-300 transition-colors hover:border-gray-300"
@@ -283,18 +286,11 @@ function ResultFailure({
   );
 }
 
-function buildGitHubIssueUrl(
-  originalUrl: string,
-  result: SanitizeResult,
-): string {
-  const domain = new URL(originalUrl).hostname;
+function buildGitHubIssueUrl(domain: string, result: SanitizeResult): string {
   const title = `Rule request: ${domain}`;
 
-  const body = `## URL
-\`${originalUrl}\`
-
-## Suggested Sanitized URL
-\`${result.sanitizedUrl}\`
+  const body = `## Domain
+\`${domain}\`
 
 ## Removed Parameters
 ${result.removedParams.length > 0 ? result.removedParams.map((p) => `- \`${p}\``).join("\n") : "None"}
