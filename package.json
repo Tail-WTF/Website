@@ -3,32 +3,38 @@
   "version": "0.1.0",
   "author": "Tail.WTF Contributors <hello@tail.wtf>",
   "private": true,
+  "type": "module",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
     "start": "npx serve out",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "lint": "eslint . && prettier --check ."
   },
-  "dependencies": {
-    "next": "^16.0.9",
-    "react": "19.2.1",
-    "react-dom": "19.2.1"
-  },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.17",
+    "@eslint/js": "^9.28.0",
+    "@sveltejs/adapter-static": "^3.0.8",
+    "@sveltejs/kit": "^2.16.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.3",
+    "@tailwindcss/vite": "^4.1.17",
     "@types/node": "24.10.1",
-    "@types/react": "19.2.7",
-    "@types/react-dom": "19.2.3",
     "eslint": "9.39.1",
-    "eslint-config-next": "16.0.7",
+    "eslint-plugin-svelte": "^3.8.1",
     "eslint-plugin-unused-imports": "^4.3.0",
+    "globals": "^16.2.0",
     "postcss": "^8.5.6",
     "prettier": "^3.7.4",
+    "prettier-plugin-svelte": "^3.4.0",
     "prettier-plugin-tailwindcss": "^0.7.2",
+    "svelte": "^5.28.2",
+    "svelte-check": "^4.2.1",
     "tailwindcss": "^4.1.17",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.33.1",
+    "vite": "^6.3.5"
   }
 }
