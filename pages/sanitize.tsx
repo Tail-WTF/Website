@@ -4,39 +4,69 @@ import Layout from "../components/layout";
 import { LinkBox } from "../components/form";
 import { H1 } from "../components/headings";
 
-import { useState } from "react";
-import { GetServerSideProps } from "next";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
 
-import { sanitizeLinkInText } from "../utils/sanitizer";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 
-export const getServerSideProps: GetServerSideProps = async (ctx) => {
-  const { url = null } = ctx.query;
-  if (!url || Array.isArray(url)) {
-    return {
-      notFound: true,
+type State =
+  | { status: "loading" }
+  | { status: "success"; text: string; sanitizedURL: string }
+  | { status: "error" };
+
+export default function ResultWrapper() {
+  const router = useRouter();
+  const { url } = router.query;
+  const validUrl = typeof url === "string" ? url : null;
+
+  const [state, setState] = useState<State>({ status: "loading" });
+
+  useEffect(() => {
+    if (!validUrl) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const params = new URLSearchParams({ text: validUrl });
+        const res = await fetch(`${API_URL}/api/sanitize?${params}`);
+        const data = await res.json();
+
+        if (cancelled) return;
+
+        if (data.sanitizedURLs?.[0]) {
+          setState({
+            status: "success",
+            text: data.text,
+            sanitizedURL: data.sanitizedURLs[0],
+          });
+        } else {
+          setState({ status: "error" });
+        }
+      } catch {
+        if (!cancelled) setState({ status: "error" });
+      }
+    })();
+
+    return () => {
+      cancelled = true;
     };
+  }, [validUrl]);
+
+  if (!validUrl || state.status === "loading") {
+    return (
+      <Layout>
+        <header>
+          <H1 className="font-normal! italic">Sanitizing...</H1>
+        </header>
+      </Layout>
+    );
   }
 
-  const sanitized = await sanitizeLinkInText(url);
-  return {
-    props: {
-      text: sanitized.text,
-      sanitizedURL: sanitized.links?.[0] || null,
-    },
-  };
-};
-
-export default function ResultWrapper({
-  text,
-  sanitizedURL,
-}: {
-  text: string;
-  sanitizedURL: string | undefined;
-}) {
   return (
     <Layout>
-      {sanitizedURL ? (
-        <ResultSuccess text={text} sanitizedURL={sanitizedURL} />
+      {state.status === "success" ? (
+        <ResultSuccess text={state.text} sanitizedURL={state.sanitizedURL} />
       ) : (
         <ResultFailure />
       )}
@@ -49,7 +79,7 @@ function ResultSuccess({
   sanitizedURL,
 }: {
   text: string;
-  sanitizedURL: string | undefined;
+  sanitizedURL: string;
 }): React.ReactElement {
   const [copyState, setCopyState] = useState<boolean | null>(null);
 
@@ -58,7 +88,7 @@ function ResultSuccess({
     try {
       navigator.clipboard.writeText(text);
       setCopyState(true);
-    } catch (error) {
+    } catch {
       setCopyState(false);
     }
   };
@@ -79,7 +109,7 @@ function ResultSuccess({
           readOnly
           value={text}
           className="border-lime-200 pr-14 text-lime-200"
-          onClick={copyState === null ? handleInputClick : undefined} // Only trigger on first click
+          onClick={copyState === null ? handleInputClick : undefined}
         />
         <a
           href={sanitizedURL}
