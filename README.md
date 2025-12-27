@@ -20,24 +20,6 @@
 - Node.js 24+
 - npm
 
-### Setup
-
-```bash
-npm install
-```
-
-### Commands
-
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server with hot reload |
-| `npm run build` | Build static site to `out/` directory |
-| `npm run preview` | Preview production build locally |
-| `npm run lint` | Run ESLint and Prettier checks |
-| `npm run check` | Run Svelte type checking |
-| `npm run test:e2e` | Run Playwright e2e tests (headless) |
-| `npm run test:e2e:ui` | Run Playwright tests with UI |
-
 ### Project Structure
 
 ```
@@ -49,14 +31,85 @@ src/
 ├── lib/
 │   └── components/   # Reusable Svelte components
 e2e/                  # Playwright e2e tests
-worker/               # Cloudflare Worker API (separate deployment)
+worker/               # Cloudflare Worker API
 ```
+
+---
+
+## Frontend (SvelteKit)
+
+### Setup
+
+```bash
+npm install
+```
+
+### Commands
+
+| Command               | Description                              |
+| --------------------- | ---------------------------------------- |
+| `npm run dev`         | Start development server with hot reload |
+| `npm run build`       | Build static site to `out/` directory    |
+| `npm run preview`     | Preview production build locally         |
+| `npm run lint`        | Run ESLint and Prettier checks           |
+| `npm run check`       | Run Svelte type checking                 |
+| `npm run test:e2e`    | Run Playwright e2e tests (headless)      |
+| `npm run test:e2e:ui` | Run Playwright tests with UI             |
 
 ### Deployment
 
-The frontend is deployed to Cloudflare Pages on push to `main`. Required secrets:
+Deployed to Cloudflare Pages on push to `main`.
 
-- `CLOUDFLARE_API_TOKEN` - API token with Pages edit permissions
-- `CLOUDFLARE_ACCOUNT_ID` - Cloudflare account ID
+---
 
-The worker API in `worker/` is deployed separately to Cloudflare Workers.
+## Worker API (Cloudflare Workers)
+
+The API is built with [Hono](https://hono.dev/) and runs on Cloudflare Workers with Workers AI and Browser Rendering.
+
+### Setup
+
+```bash
+cd worker
+npm install
+```
+
+### Commands
+
+| Command          | Description                          |
+| ---------------- | ------------------------------------ |
+| `npm run dev`    | Start local dev server with Wrangler |
+| `npm run deploy` | Deploy to Cloudflare Workers         |
+| `npm run test`   | Run Vitest tests                     |
+
+### Configuration
+
+Edit `worker/wrangler.toml` to configure:
+
+- `name` - Worker name
+- `RULES_KV` - KV namespace for sanitization rules
+- `AI` - Workers AI binding
+- `BROWSER` - Browser Rendering binding
+
+### Local Development
+
+```bash
+cd worker
+npm run dev
+```
+
+The worker runs at `http://localhost:8787`. Use `VITE_API_URL=http://localhost:8787` when running the frontend to connect to local worker.
+
+### Deployment
+
+Deployed to Cloudflare Workers on push to `main` (when `worker/` files change).
+
+---
+
+## Required Secrets
+
+Configure these in GitHub repository settings:
+
+| Secret                  | Description                                  |
+| ----------------------- | -------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`  | API token with Workers and Pages permissions |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID                   |
