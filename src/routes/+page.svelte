@@ -17,7 +17,9 @@
     if (url === "") {
       try {
         url = await navigator.clipboard.readText();
-      } catch {}
+      } catch {
+        // Clipboard access denied or unavailable - ignore
+      }
     }
   }
 </script>
@@ -94,8 +96,8 @@
       <span class="text-rose-450">"trackers"</span>
       tied to your account. Every time your friends open these links, service providers
       learn more about your social connections such as how often you talk to a particular
-      friend, topics you discuss, etc. They can further exploit this information
-      in conjunction with other data they have about you and your friends.
+      friend, topics you discuss, etc. They can further exploit this information in
+      conjunction with other data they have about you and your friends.
       <br />
       <br />
       Tail.WTF protects your privacy by chopping the annoying

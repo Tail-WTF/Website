@@ -36,16 +36,19 @@ export default ts.config(
         },
       ],
       "unused-imports/no-unused-imports": "error",
+      "svelte/no-navigation-without-resolve": "off",
     },
   },
   {
     ignores: [
       "build/",
       ".svelte-kit/",
+      ".next/",
       "dist/",
       "out/",
       "node_modules/",
       "worker/",
+      "playwright-report/",
     ],
   },
 );

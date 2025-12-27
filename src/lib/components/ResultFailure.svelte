@@ -56,10 +56,7 @@
     }
   }
 
-  function buildGitHubIssueUrl(
-    domain: string,
-    result: SanitizeResult,
-  ): string {
+  function buildGitHubIssueUrl(domain: string, result: SanitizeResult): string {
     const title = `Rule request: ${domain}`;
 
     const body = `## Domain

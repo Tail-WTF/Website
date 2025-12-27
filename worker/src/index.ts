@@ -293,7 +293,10 @@ function quickHeuristicCheck(a: PageRender, b: PageRender): boolean | null {
   if (a.title && b.title && a.title !== b.title) {
     // Check if difference is just tracking-related suffix
     const normalize = (t: string) =>
-      t.replace(/\s*[-|·]\s*.*$/, "").trim().toLowerCase();
+      t
+        .replace(/\s*[-|·]\s*.*$/, "")
+        .trim()
+        .toLowerCase();
     if (normalize(a.title) !== normalize(b.title)) {
       return false;
     }
@@ -460,7 +463,9 @@ app.post("/api/browser-sanitize", async (c) => {
         urlWithoutThisParam.toString(),
       );
 
-      if (!(await arePagesSimlar(c.env.AI, originalPage, pageWithoutThisParam))) {
+      if (
+        !(await arePagesSimlar(c.env.AI, originalPage, pageWithoutThisParam))
+      ) {
         requiredParams.push(key);
       }
     }
