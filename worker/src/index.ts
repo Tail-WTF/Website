@@ -199,4 +199,153 @@ Call the sanitize_url function with your analysis.`;
   });
 });
 
+async function renderPage(
+  browser: Fetcher,
+  url: string,
+): Promise<{
+  title: string;
+  ogData: Record<string, string>;
+  bodyLength: number;
+}> {
+  const res = await browser.fetch(
+    `https://browser-render.example.com/?url=${encodeURIComponent(url)}`,
+    {
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+
+  if (!res.ok) {
+    throw new Error(`Browser render failed: ${res.status}`);
+  }
+
+  const html = await res.text();
+
+  const titleMatch = html.match(/<title[^>]*>([^<]*)<\/title>/i);
+  const title = titleMatch?.[1] || "";
+
+  const ogData: Record<string, string> = {};
+  const ogMatches = html.matchAll(
+    /<meta\s+property="og:([^"]+)"\s+content="([^"]*)"/gi,
+  );
+  for (const match of ogMatches) {
+    ogData[match[1]] = match[2];
+  }
+
+  return { title, ogData, bodyLength: html.length };
+}
+
+function arePagesSimlar(
+  a: { title: string; ogData: Record<string, string>; bodyLength: number },
+  b: { title: string; ogData: Record<string, string>; bodyLength: number },
+): boolean {
+  if (a.title !== b.title) return false;
+
+  if (a.ogData["title"] !== b.ogData["title"]) return false;
+  if (a.ogData["description"] !== b.ogData["description"]) return false;
+  if (a.ogData["image"] !== b.ogData["image"]) return false;
+
+  const lengthRatio =
+    Math.min(a.bodyLength, b.bodyLength) / Math.max(a.bodyLength, b.bodyLength);
+  if (lengthRatio < 0.8) return false;
+
+  return true;
+}
+
+app.post("/api/browser-sanitize", async (c) => {
+  const { url } = await c.req.json<{ url: string }>();
+
+  if (!url) {
+    return c.json({ error: "Missing url" }, 400);
+  }
+
+  let parsedUrl: URL;
+  try {
+    parsedUrl = new URL(url);
+  } catch {
+    return c.json({ error: "Invalid URL" }, 400);
+  }
+
+  const allParams = Array.from(parsedUrl.searchParams.entries());
+  if (allParams.length === 0) {
+    return c.json({
+      sanitizedUrl: url,
+      requiredParams: [],
+      removedParams: [],
+      suggestedRule: null,
+    });
+  }
+
+  try {
+    const originalPage = await renderPage(c.env.BROWSER, url);
+
+    const baseUrl = `${parsedUrl.origin}${parsedUrl.pathname}`;
+    const noParamsPage = await renderPage(c.env.BROWSER, baseUrl);
+
+    if (arePagesSimlar(originalPage, noParamsPage)) {
+      return c.json({
+        sanitizedUrl: baseUrl,
+        requiredParams: [],
+        removedParams: allParams.map(([k]) => k),
+        suggestedRule: {
+          pattern: `^${parsedUrl.pathname.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+          allowedParams: [],
+        },
+      });
+    }
+
+    const requiredParams: string[] = [];
+
+    for (const [key, value] of allParams) {
+      const testUrl = new URL(baseUrl);
+      for (const p of requiredParams) {
+        const pValue = parsedUrl.searchParams.get(p);
+        if (pValue) testUrl.searchParams.set(p, pValue);
+      }
+      testUrl.searchParams.set(key, value);
+
+      const testPage = await renderPage(c.env.BROWSER, testUrl.toString());
+
+      const urlWithoutThisParam = new URL(baseUrl);
+      for (const p of requiredParams) {
+        const pValue = parsedUrl.searchParams.get(p);
+        if (pValue) urlWithoutThisParam.searchParams.set(p, pValue);
+      }
+      const pageWithoutThisParam = await renderPage(
+        c.env.BROWSER,
+        urlWithoutThisParam.toString(),
+      );
+
+      if (!arePagesSimlar(originalPage, pageWithoutThisParam)) {
+        requiredParams.push(key);
+      }
+    }
+
+    const sanitizedUrl = new URL(baseUrl);
+    for (const p of requiredParams) {
+      const pValue = parsedUrl.searchParams.get(p);
+      if (pValue) sanitizedUrl.searchParams.set(p, pValue);
+    }
+
+    return c.json({
+      sanitizedUrl: sanitizedUrl.toString(),
+      requiredParams,
+      removedParams: allParams
+        .filter(([k]) => !requiredParams.includes(k))
+        .map(([k]) => k),
+      suggestedRule: {
+        pattern: `^${parsedUrl.pathname.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`,
+        allowedParams: requiredParams,
+      },
+    });
+  } catch (error) {
+    return c.json(
+      {
+        error: "Browser rendering failed",
+        details: error instanceof Error ? error.message : "Unknown error",
+      },
+      500,
+    );
+  }
+});
+
 export default app;
