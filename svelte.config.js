@@ -13,7 +13,7 @@ const config = {
       strict: true,
     }),
     prerender: {
-      entries: ["/", "/sanitize"],
+      entries: ["/"],
     },
   },
 };
