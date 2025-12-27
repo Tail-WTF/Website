@@ -386,7 +386,7 @@ Answer with just "SAME" if they show the same main content, or "DIFFERENT" if th
   return result.toUpperCase().includes("SAME");
 }
 
-async function arePagesSimlar(
+async function arePagesSimilar(
   ai: Ai,
   a: PageRender,
   b: PageRender,
@@ -431,7 +431,7 @@ app.post("/api/browser-sanitize", async (c) => {
     const baseUrl = `${parsedUrl.origin}${parsedUrl.pathname}`;
     const noParamsPage = await renderPage(c.env.BROWSER, baseUrl);
 
-    if (await arePagesSimlar(c.env.AI, originalPage, noParamsPage)) {
+    if (await arePagesSimilar(c.env.AI, originalPage, noParamsPage)) {
       return c.json({
         sanitizedUrl: baseUrl,
         requiredParams: [],
@@ -464,7 +464,7 @@ app.post("/api/browser-sanitize", async (c) => {
       );
 
       if (
-        !(await arePagesSimlar(c.env.AI, originalPage, pageWithoutThisParam))
+        !(await arePagesSimilar(c.env.AI, originalPage, pageWithoutThisParam))
       ) {
         requiredParams.push(key);
       }
