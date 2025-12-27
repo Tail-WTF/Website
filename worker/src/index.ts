@@ -243,12 +243,17 @@ Call the sanitize_url function with your analysis.`;
   });
 });
 
+interface PageRender {
+  screenshot: Uint8Array;
+  title: string;
+  ogTitle: string;
+  ogDescription: string;
+}
+
 async function renderPage(
   browserBinding: Fetcher,
   url: string,
-): Promise<{
-  screenshot: Uint8Array;
-}> {
+): Promise<PageRender> {
   const browser = await puppeteer.launch(browserBinding);
   try {
     const page = await browser.newPage();
@@ -260,38 +265,137 @@ async function renderPage(
       fullPage: false,
     })) as Uint8Array;
 
-    return { screenshot };
+    const title = await page.title();
+
+    const ogTitle = await page
+      .$eval('meta[property="og:title"]', (el) => el.getAttribute("content"))
+      .catch(() => null);
+
+    const ogDescription = await page
+      .$eval('meta[property="og:description"]', (el) =>
+        el.getAttribute("content"),
+      )
+      .catch(() => null);
+
+    return {
+      screenshot,
+      title,
+      ogTitle: ogTitle || "",
+      ogDescription: ogDescription || "",
+    };
   } finally {
     await browser.close();
   }
 }
 
-function arePagesSimlar(
-  a: { screenshot: Uint8Array },
-  b: { screenshot: Uint8Array },
-  threshold = 0.95,
-): boolean {
-  // Compare screenshot bytes - if sizes differ significantly, pages are different
-  if (
-    Math.abs(a.screenshot.length - b.screenshot.length) /
-      Math.max(a.screenshot.length, b.screenshot.length) >
-    0.1
-  ) {
-    return false;
-  }
-
-  // Compare byte-by-byte similarity
-  const minLength = Math.min(a.screenshot.length, b.screenshot.length);
-  let matchingBytes = 0;
-
-  for (let i = 0; i < minLength; i++) {
-    if (a.screenshot[i] === b.screenshot[i]) {
-      matchingBytes++;
+function quickHeuristicCheck(a: PageRender, b: PageRender): boolean | null {
+  // Quick check: if titles are completely different, pages are different
+  if (a.title && b.title && a.title !== b.title) {
+    // Check if difference is just tracking-related suffix
+    const normalize = (t: string) =>
+      t.replace(/\s*[-|·]\s*.*$/, "").trim().toLowerCase();
+    if (normalize(a.title) !== normalize(b.title)) {
+      return false;
     }
   }
 
-  const similarity = matchingBytes / Math.max(a.screenshot.length, b.screenshot.length);
-  return similarity >= threshold;
+  // If OG metadata differs significantly, pages are likely different
+  if (a.ogTitle && b.ogTitle && a.ogTitle !== b.ogTitle) {
+    return false;
+  }
+
+  // Can't determine from heuristics alone
+  return null;
+}
+
+function arrayBufferToBase64(buffer: Uint8Array): string {
+  let binary = "";
+  for (let i = 0; i < buffer.length; i++) {
+    binary += String.fromCharCode(buffer[i]);
+  }
+  return btoa(binary);
+}
+
+async function compareWithVision(
+  ai: Ai,
+  a: PageRender,
+  b: PageRender,
+): Promise<boolean> {
+  const imageA = arrayBufferToBase64(a.screenshot);
+  const imageB = arrayBufferToBase64(b.screenshot);
+
+  // First turn: describe the first image
+  const describeA = await ai.run("@cf/meta/llama-3.2-11b-vision-instruct", {
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: "Describe the main content of this webpage screenshot in 2-3 sentences. Focus on the primary content, layout, and any key elements visible.",
+          },
+          {
+            type: "image",
+            image: imageA,
+          },
+        ],
+      },
+    ],
+  });
+
+  const descriptionA =
+    typeof describeA === "object" && "response" in describeA
+      ? (describeA as { response: string }).response
+      : String(describeA);
+
+  // Second turn: compare with the second image
+  const comparison = await ai.run("@cf/meta/llama-3.2-11b-vision-instruct", {
+    messages: [
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: `I have two webpage screenshots. The first one shows: "${descriptionA}"
+
+Now look at this second screenshot. Are these two pages showing the SAME content (same article, same product, same page)?
+Ignore minor differences like:
+- Different ads or promotional banners
+- Slight layout variations
+- Cookie consent popups
+
+Answer with just "SAME" if they show the same main content, or "DIFFERENT" if they show different content.`,
+          },
+          {
+            type: "image",
+            image: imageB,
+          },
+        ],
+      },
+    ],
+  });
+
+  const result =
+    typeof comparison === "object" && "response" in comparison
+      ? (comparison as { response: string }).response
+      : String(comparison);
+
+  return result.toUpperCase().includes("SAME");
+}
+
+async function arePagesSimlar(
+  ai: Ai,
+  a: PageRender,
+  b: PageRender,
+): Promise<boolean> {
+  // Step 1: Quick heuristic check
+  const heuristicResult = quickHeuristicCheck(a, b);
+  if (heuristicResult !== null) {
+    return heuristicResult;
+  }
+
+  // Step 2: Use AI vision for accurate comparison
+  return compareWithVision(ai, a, b);
 }
 
 app.post("/api/browser-sanitize", async (c) => {
@@ -324,7 +428,7 @@ app.post("/api/browser-sanitize", async (c) => {
     const baseUrl = `${parsedUrl.origin}${parsedUrl.pathname}`;
     const noParamsPage = await renderPage(c.env.BROWSER, baseUrl);
 
-    if (arePagesSimlar(originalPage, noParamsPage)) {
+    if (await arePagesSimlar(c.env.AI, originalPage, noParamsPage)) {
       return c.json({
         sanitizedUrl: baseUrl,
         requiredParams: [],
@@ -346,8 +450,6 @@ app.post("/api/browser-sanitize", async (c) => {
       }
       testUrl.searchParams.set(key, value);
 
-      const testPage = await renderPage(c.env.BROWSER, testUrl.toString());
-
       const urlWithoutThisParam = new URL(baseUrl);
       for (const p of requiredParams) {
         const pValue = parsedUrl.searchParams.get(p);
@@ -358,7 +460,7 @@ app.post("/api/browser-sanitize", async (c) => {
         urlWithoutThisParam.toString(),
       );
 
-      if (!arePagesSimlar(originalPage, pageWithoutThisParam)) {
+      if (!(await arePagesSimlar(c.env.AI, originalPage, pageWithoutThisParam))) {
         requiredParams.push(key);
       }
     }
