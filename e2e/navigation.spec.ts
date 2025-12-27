@@ -9,11 +9,10 @@ test.describe("Navigation", () => {
     await expect(page).toHaveURL("/#about");
 
     // Check Privacy link scrolls to section
-    await page.getByRole("link", { name: "Privacy" }).click();
+    await page.getByRole("link", { name: "Go to Privacy section" }).click();
     await expect(page).toHaveURL("/#privacy");
 
     // Check Tail.WTF link goes to home
-    await page.goto("/sanitize?url=test");
     await page.getByRole("link", { name: "Tail.WTF" }).click();
     await expect(page).toHaveURL("/");
   });

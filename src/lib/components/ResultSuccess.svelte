@@ -6,9 +6,10 @@
   interface Props {
     text: string;
     sanitizedURL: string;
+    onReset?: () => void;
   }
 
-  let { text, sanitizedURL }: Props = $props();
+  let { text, sanitizedURL, onReset }: Props = $props();
   let copyState = $state<boolean | null>(null);
 
   function handleInputClick(e: MouseEvent) {
@@ -62,5 +63,13 @@
     >
       {copyState ? "Copied!" : "Unable to copy link. Please try manually."}
     </p>
+  {/if}
+  {#if onReset}
+    <button
+      onclick={onReset}
+      class="mt-6 border-2 border-gray-500 px-6 py-2 text-gray-300 transition-colors hover:border-gray-300"
+    >
+      Sanitize another link
+    </button>
   {/if}
 </Layout>

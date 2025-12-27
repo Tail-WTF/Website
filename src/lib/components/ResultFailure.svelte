@@ -7,6 +7,7 @@
 
   interface Props {
     originalUrl: string;
+    onReset?: () => void;
   }
 
   interface SanitizeResult {
@@ -17,7 +18,7 @@
     requiredParams?: string[];
   }
 
-  let { originalUrl }: Props = $props();
+  let { originalUrl, onReset }: Props = $props();
   let method = $state<"idle" | "ai" | "browser">("idle");
   let fetchState = $state<"idle" | "loading" | "success" | "error">("idle");
   let result = $state<SanitizeResult | null>(null);
@@ -165,5 +166,13 @@ ${domain}:
         </div>
       {/if}
     </div>
+  {/if}
+  {#if onReset}
+    <button
+      onclick={onReset}
+      class="mt-6 border-2 border-gray-500 px-6 py-2 text-gray-300 transition-colors hover:border-gray-300"
+    >
+      Sanitize another link
+    </button>
   {/if}
 </Layout>

@@ -36,7 +36,7 @@ export default ts.config(
         },
       ],
       "unused-imports/no-unused-imports": "error",
-      "svelte/no-navigation-without-resolve": "off",
+      "svelte/no-navigation-without-resolve": ["error", { ignoreLinks: true }],
     },
   },
   {
