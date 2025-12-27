@@ -7,10 +7,12 @@
 
 # testing
 /coverage
+/playwright-report/
+/test-results/
 
-# next.js
+# sveltekit
+/.svelte-kit/
 /.next/
-/.swc/
 /out/
 
 # production
@@ -35,3 +37,4 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+worker/node_modules
