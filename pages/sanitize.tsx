@@ -12,7 +12,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "";
 type State =
   | { status: "loading" }
   | { status: "success"; text: string; sanitizedURL: string }
-  | { status: "error" };
+  | { status: "error"; originalUrl: string };
 
 export default function ResultWrapper() {
   const router = useRouter();
@@ -41,10 +41,10 @@ export default function ResultWrapper() {
             sanitizedURL: data.sanitizedURLs[0],
           });
         } else {
-          setState({ status: "error" });
+          setState({ status: "error", originalUrl: validUrl });
         }
       } catch {
-        if (!cancelled) setState({ status: "error" });
+        if (!cancelled) setState({ status: "error", originalUrl: validUrl });
       }
     })();
 
@@ -71,7 +71,7 @@ export default function ResultWrapper() {
       {state.status === "success" ? (
         <ResultSuccess text={state.text} sanitizedURL={state.sanitizedURL} />
       ) : (
-        <ResultFailure />
+        <ResultFailure originalUrl={state.originalUrl} />
       )}
     </Layout>
   );
@@ -142,7 +142,55 @@ function ResultSuccess({
   );
 }
 
-function ResultFailure(): React.ReactElement {
+interface AiResult {
+  sanitizedUrl: string;
+  confidence: number;
+  removedParams: string[];
+  keptParams: string[];
+  suggestedRule: { pattern: string; allowedParams: string[] } | null;
+}
+
+function ResultFailure({
+  originalUrl,
+}: {
+  originalUrl: string;
+}): React.ReactElement {
+  const [aiState, setAiState] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
+  const [aiResult, setAiResult] = useState<AiResult | null>(null);
+  const [copyState, setCopyState] = useState<boolean | null>(null);
+
+  const tryAiSanitize = async () => {
+    setAiState("loading");
+    try {
+      const res = await fetch(`${API_URL}/api/ai-sanitize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: originalUrl }),
+      });
+      const data = await res.json();
+      if (data.sanitizedUrl) {
+        setAiResult(data);
+        setAiState("success");
+      } else {
+        setAiState("error");
+      }
+    } catch {
+      setAiState("error");
+    }
+  };
+
+  const handleCopy = () => {
+    if (!aiResult) return;
+    try {
+      navigator.clipboard.writeText(aiResult.sanitizedUrl);
+      setCopyState(true);
+    } catch {
+      setCopyState(false);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -152,9 +200,60 @@ function ResultFailure(): React.ReactElement {
         <H1 className="font-normal!">😢 Your link is not sanitized.</H1>
       </header>
       <p className="text-rose-450 mt-4">
-        We were unable to sanitize your link. <br />
-        Please submit a rule request on GitHub to help us improve.
+        We were unable to sanitize your link with our rules.
       </p>
+
+      {aiState === "idle" && (
+        <button
+          onClick={tryAiSanitize}
+          className="mt-6 border-2 border-gray-500 px-6 py-2 text-gray-300 transition-colors hover:border-gray-300"
+        >
+          Try AI Sanitization
+        </button>
+      )}
+
+      {aiState === "loading" && (
+        <p className="mt-6 animate-pulse text-gray-400">
+          AI is analyzing your URL...
+        </p>
+      )}
+
+      {aiState === "error" && (
+        <p className="text-rose-450 mt-6">AI sanitization failed.</p>
+      )}
+
+      {aiState === "success" && aiResult && (
+        <div className="mt-6">
+          <p className="text-lime-550">
+            AI suggestion (confidence: {Math.round(aiResult.confidence * 100)}
+            %):
+          </p>
+          <div className="relative mt-2">
+            <LinkBox
+              readOnly
+              value={aiResult.sanitizedUrl}
+              className="border-lime-200 pr-14 text-lime-200"
+              onClick={handleCopy}
+            />
+          </div>
+          {copyState && <p className="text-lime-550 mt-2">Copied!</p>}
+
+          {aiResult.removedParams.length > 0 && (
+            <p className="mt-4 text-sm text-gray-400">
+              Removed: {aiResult.removedParams.join(", ")}
+            </p>
+          )}
+
+          {aiResult.suggestedRule && (
+            <div className="mt-4 border border-gray-700 p-4">
+              <p className="text-sm text-gray-300">Suggested rule:</p>
+              <pre className="mt-2 overflow-auto text-xs text-gray-400">
+                {JSON.stringify(aiResult.suggestedRule, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 }
