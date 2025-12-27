@@ -267,10 +267,52 @@ function ResultFailure({
               <pre className="mt-2 overflow-auto text-xs text-gray-400">
                 {JSON.stringify(result.suggestedRule, null, 2)}
               </pre>
+              <a
+                href={buildGitHubIssueUrl(originalUrl, result)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-block border-2 border-gray-500 px-4 py-2 text-sm text-gray-300 transition-colors hover:border-gray-300"
+              >
+                Submit Rule to GitHub
+              </a>
             </div>
           )}
         </div>
       )}
     </>
   );
+}
+
+function buildGitHubIssueUrl(
+  originalUrl: string,
+  result: SanitizeResult,
+): string {
+  const domain = new URL(originalUrl).hostname;
+  const title = `Rule request: ${domain}`;
+
+  const body = `## URL
+\`${originalUrl}\`
+
+## Suggested Sanitized URL
+\`${result.sanitizedUrl}\`
+
+## Removed Parameters
+${result.removedParams.length > 0 ? result.removedParams.map((p) => `- \`${p}\``).join("\n") : "None"}
+
+## Suggested Rule
+\`\`\`yaml
+${domain}:
+  sanitize:
+    - pattern: "${result.suggestedRule?.pattern || "^/.*$"}"
+      allowedParams: [${result.suggestedRule?.allowedParams.map((p) => `"${p}"`).join(", ") || ""}]
+\`\`\`
+`;
+
+  const params = new URLSearchParams({
+    title,
+    body,
+    labels: "rule-request",
+  });
+
+  return `https://github.com/Tail-WTF/Website/issues/new?${params}`;
 }
