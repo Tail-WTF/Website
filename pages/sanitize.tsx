@@ -57,8 +57,11 @@ export default function ResultWrapper() {
     return (
       <Layout>
         <header>
-          <H1 className="font-normal! italic">Sanitizing...</H1>
+          <H1 className="animate-pulse font-normal! italic">Sanitizing...</H1>
         </header>
+        <div className="mt-3.5">
+          <div className="h-14 w-full animate-pulse rounded border-2 border-gray-700 bg-gray-800/50" />
+        </div>
       </Layout>
     );
   }
@@ -128,14 +131,13 @@ function ResultSuccess({
           </svg>
         </a>
       </div>
-      {copyState !== null &&
-        (copyState ? (
-          <p className="text-lime-550 mt-4">Copied!</p>
-        ) : (
-          <p className="text-rose-450 mt-4">
-            Unable to copy link. Please try manually.
-          </p>
-        ))}
+      {copyState !== null && (
+        <p
+          className={`mt-4 transition-opacity duration-200 ${copyState ? "text-lime-550" : "text-rose-450"}`}
+        >
+          {copyState ? "Copied!" : "Unable to copy link. Please try manually."}
+        </p>
+      )}
     </>
   );
 }
