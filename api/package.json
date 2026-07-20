@@ -1,0 +1,33 @@
+{
+  "name": "@tail-wtf/api",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.12.3",
+  "scripts": {
+    "build:rules": "node scripts/build-rules.mjs",
+    "build:types": "wrangler types",
+    "prepare": "pnpm run build:rules && pnpm run build:types",
+    "dev": "wrangler dev",
+    "predeploy": "pnpm run build:rules && pnpm run rotate:actor-key",
+    "rotate:actor-key": "node scripts/actor-key.mjs | wrangler secret put ACTOR_HASH_KEY || echo 'WARN: actor key rotation failed; keeping the previous key'",
+    "deploy": "wrangler deploy",
+    "pretest": "pnpm run build:rules && pnpm run build:types",
+    "test": "vitest run",
+    "check": "pnpm run pretest && tsc --noEmit"
+  },
+  "dependencies": {
+    "@cloudflare/puppeteer": "^1.1.0",
+    "grammy": "^1.45.1",
+    "hono": "^4.7.9",
+    "ipaddr.js": "^2.4.0",
+    "js-yaml": "^4.1.1",
+    "linkifyjs": "^4.3.2"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.18.6",
+    "@types/js-yaml": "^4.0.5",
+    "vitest": "^4.1.10",
+    "wrangler": "^4.18.0"
+  }
+}

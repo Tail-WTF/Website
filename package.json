@@ -1,38 +1,19 @@
 {
-  "name": "tail.wtf-website",
-  "version": "0.1.0",
-  "author": "Tail.WTF Contributors <hello@tail.wtf>",
+  "name": "tail-wtf-website",
   "private": true,
-  "engines": {
-    "node": ">=24"
+  "packageManager": "pnpm@9.12.3",
+  "pnpm": {
+    "overrides": {
+      "cookie": ">=0.7.0"
+    }
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint . && prettier --check ."
-  },
-  "dependencies": {
-    "got": "^15.0.3",
-    "js-yaml": "4.1.1",
-    "linkifyjs": "4.3.2",
-    "next": "^16.2.6",
-    "react": "19.2.5",
-    "react-dom": "19.2.5"
-  },
-  "devDependencies": {
-    "@tailwindcss/postcss": "^4.2.4",
-    "@types/js-yaml": "^4.0.5",
-    "@types/node": "25.6.0",
-    "@types/react": "19.2.14",
-    "@types/react-dom": "19.2.3",
-    "eslint": "9.39.4",
-    "eslint-config-next": "16.2.6",
-    "eslint-plugin-unused-imports": "^4.4.1",
-    "postcss": "^8.5.13",
-    "prettier": "^3.8.3",
-    "prettier-plugin-tailwindcss": "^0.8.0",
-    "tailwindcss": "^4.1.17",
-    "typescript": "5.9.3"
+    "dev": "pnpm --dir frontend build && pnpm --dir api exec wrangler dev",
+    "dev:ui": "pnpm --dir frontend dev",
+    "build": "pnpm --dir frontend build && pnpm --dir api run build:rules",
+    "check": "pnpm --dir api run check && pnpm --dir frontend run check",
+    "test": "pnpm --dir api test",
+    "test:e2e": "pnpm --dir frontend run test:e2e",
+    "deploy": "pnpm run build && pnpm --dir api run deploy"
   }
 }

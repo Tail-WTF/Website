@@ -1,0 +1,4 @@
+Contact: https://github.com/Tail-WTF/Website/security/advisories/new
+Expires: 2099-01-01T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://tail.wtf/.well-known/security.txt

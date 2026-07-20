@@ -1,1 +1,4 @@
-/.next/
+/.svelte-kit/
+/build/
+/out/
+/node_modules/
