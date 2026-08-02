@@ -1,7 +1,7 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import yaml from "js-yaml";
+import { load } from "js-yaml";
 
 const packageRoot = dirname(dirname(fileURLToPath(import.meta.url)));
 const target = join(packageRoot, "src", "rules.generated.json");
@@ -36,7 +36,7 @@ async function loadRules() {
 }
 
 const { text, source } = await loadRules();
-const rules = yaml.load(text);
+const rules = load(text);
 if (typeof rules !== "object" || rules === null) {
   throw new Error(`Expected a rule mapping from ${source}`);
 }
