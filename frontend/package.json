@@ -13,7 +13,7 @@
     "build": "vite build && node scripts/csp-headers.mjs",
     "preview": "vite preview",
     "e2e:server": "pnpm run build && pnpm --dir ../api run build:rules && pnpm --dir ../api exec wrangler dev --port 4173",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check": "svelte-kit sync && svelte-check --tsgo --tsconfig ./tsconfig.json",
     "lint": "eslint . && prettier --check .",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui"
@@ -26,6 +26,7 @@
     "@sveltejs/vite-plugin-svelte": "^7.2.0",
     "@tailwindcss/vite": "^4.1.17",
     "@types/node": "26.1.2",
+    "@typescript/native": "npm:typescript@7.0.2",
     "eslint": "10.8.0",
     "eslint-plugin-svelte": "^3.22.0",
     "eslint-plugin-unused-imports": "^4.3.0",
@@ -37,7 +38,7 @@
     "svelte": "^5.56.8",
     "svelte-check": "^4.7.4",
     "tailwindcss": "^4.1.17",
-    "typescript": "7.0.2",
+    "typescript": "6.0.3",
     "typescript-eslint": "^8.65.0",
     "vite": "^8.1.5"
   }
