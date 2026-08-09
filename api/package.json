@@ -19,7 +19,7 @@
   "dependencies": {
     "@cloudflare/puppeteer": "^1.2.0",
     "grammy": "^1.45.1",
-    "hono": "^4.12.32",
+    "hono": "^4.12.34",
     "ipaddr.js": "^2.4.0",
     "js-yaml": "^5.2.2",
     "linkifyjs": "^4.3.2"
