@@ -17,17 +17,19 @@
     "check": "pnpm run pretest && tsc --noEmit"
   },
   "dependencies": {
-    "@cloudflare/puppeteer": "^1.2.0",
-    "grammy": "^1.45.1",
-    "hono": "^4.12.32",
-    "ipaddr.js": "^2.4.0",
-    "js-yaml": "^5.2.2",
+    "@cloudflare/puppeteer": "^1.4.0",
+    "grammy": "^1.46.0",
+    "hono": "^4.13.5",
+    "ipaddr.js": "^2.5.0",
+    "js-yaml": "^5.4.1",
     "linkifyjs": "^4.3.2"
   },
   "devDependencies": {
-    "@cloudflare/vitest-pool-workers": "^0.19.0",
+    "@cloudflare/vitest-pool-workers": "^0.22.0",
     "@types/js-yaml": "^4.0.5",
-    "vitest": "^4.1.10",
+    "@types/node": "26.4.0",
+    "typescript": "6.0.3",
+    "vitest": "^4.1.11",
     "wrangler": "^4.115.0"
   }
 }

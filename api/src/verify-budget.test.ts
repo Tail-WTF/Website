@@ -60,7 +60,8 @@ describe("verification budget", () => {
       const url = `https://budget.example/p${i}?x=1`;
       pages.set(url, shell(`Page ${i}`));
       pages.set(`https://budget.example/p${i}`, shell(`Page ${i}`));
-      await verify(url, "198.51.100.99");
+      const response = await verify(url, "198.51.100.99");
+      await response.text();
     }
 
     const response = await verify(

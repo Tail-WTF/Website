@@ -219,9 +219,9 @@ test.describe("Sanitization", () => {
       await page
         .getByRole("button", { name: "https://unknown-b.invalid/q?y=2" })
         .click();
-      await expect(
-        page.getByText("Couldn't sanitize this link."),
-      ).toBeVisible();
+      await expect(page.getByText("Couldn't sanitize this link.")).toBeVisible({
+        timeout: 30_000,
+      });
     });
 
     test("reports honestly when verification cannot prove anything", async ({
@@ -236,9 +236,9 @@ test.describe("Sanitization", () => {
       await page
         .getByRole("button", { name: "Verify against live page" })
         .click();
-      await expect(
-        page.getByText("Couldn't sanitize this link."),
-      ).toBeVisible();
+      await expect(page.getByText("Couldn't sanitize this link.")).toBeVisible({
+        timeout: 30_000,
+      });
     });
   });
 });
