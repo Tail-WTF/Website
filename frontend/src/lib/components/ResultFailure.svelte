@@ -4,7 +4,7 @@
   import H1 from "./H1.svelte";
   import ResultLink from "./ResultLink.svelte";
 
-  import { apiFor } from "$lib/config";
+  import { apiFor } from "#lib/config.ts";
 
   interface Props {
     unsanitized: string[];

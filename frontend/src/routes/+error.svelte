@@ -1,8 +1,8 @@
 <script lang="ts">
   import { page } from "$app/state";
-  import Layout from "$lib/components/Layout.svelte";
-  import H1 from "$lib/components/H1.svelte";
-  import H2 from "$lib/components/H2.svelte";
+  import Layout from "#lib/components/Layout.svelte";
+  import H1 from "#lib/components/H1.svelte";
+  import H2 from "#lib/components/H2.svelte";
 </script>
 
 <svelte:head>

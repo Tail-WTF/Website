@@ -1,13 +1,13 @@
 <script lang="ts">
-  import Layout from "$lib/components/Layout.svelte";
-  import H1 from "$lib/components/H1.svelte";
-  import H2 from "$lib/components/H2.svelte";
-  import LinkBox from "$lib/components/LinkBox.svelte";
-  import ActionBtn from "$lib/components/ActionBtn.svelte";
-  import ResultSuccess from "$lib/components/ResultSuccess.svelte";
-  import ResultFailure from "$lib/components/ResultFailure.svelte";
+  import Layout from "#lib/components/Layout.svelte";
+  import H1 from "#lib/components/H1.svelte";
+  import H2 from "#lib/components/H2.svelte";
+  import LinkBox from "#lib/components/LinkBox.svelte";
+  import ActionBtn from "#lib/components/ActionBtn.svelte";
+  import ResultSuccess from "#lib/components/ResultSuccess.svelte";
+  import ResultFailure from "#lib/components/ResultFailure.svelte";
 
-  import { apiFor } from "$lib/config";
+  import { apiFor } from "#lib/config.ts";
 
   type Link = { original: string; sanitized: string; method: string };
 
