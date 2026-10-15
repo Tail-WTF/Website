@@ -116,7 +116,7 @@ pnpm run dev:ui   # UI hot reload on :5173, /api proxied to :8787
 | Command | Description |
 | ------- | ----------- |
 | `pnpm run check` | Typecheck worker and frontend |
-| `pnpm test` | Worker unit tests (vitest + @cloudflare/vitest-pool-workers) |
+| `pnpm test` | Worker unit tests (vitest + @cloudflare/vitest-plugin) |
 | `pnpm run test:e2e` | Playwright e2e against `wrangler dev` (real API, no mocks) |
 | `pnpm run build` | Build the static site and bundle rules |
 | `pnpm run deploy` | Build and `wrangler deploy` |
